@@ -3,6 +3,7 @@ package com.example.android;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -113,14 +114,14 @@ public class ChooseAreaFragment  extends Fragment {
         provinceList = DataSupport.findAll(Province.class);
         if(provinceList.size() > 0){//如果从数据库中找得到
             dataList.clear();
-            for(Province proince : provinceList){
-                dataList.add(Province.getProvinceName());
+            for(Province province : provinceList){
+                dataList.add(province.getProvinceName());
             }
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
             currentLevel = LEVEL_PROVINCE;
         }else {//如果在数据库中找不到的话
-            String address = "http://guolin.tech/api/china";
+            String address = "http://guolin.tech/api/china/";
             queryFromServer(address,"province");
         }
     }
@@ -148,8 +149,8 @@ public class ChooseAreaFragment  extends Fragment {
     private void queryCounties(){
         titleText.setText(selectedCity.getCityName());
         backButton.setVisibility(View.VISIBLE);
-        countyList = DataSupport.where("city = ?",String.valueOf(selectedCity.getId())).
-                find(County.class);
+        countyList = DataSupport.where("cityid = ?",String.valueOf(selectedCity.getId())).
+                find(County.class);//定义的一定得弄清楚
         if(countyList.size() > 0){
             dataList.clear();
             for(County county : countyList){
@@ -161,7 +162,7 @@ public class ChooseAreaFragment  extends Fragment {
         }else{
             int provinceCode = selectedProvince.getProvinceCode();
             int cityCode = selectedCity.getCityCode();
-            String address = "http://guolin.tech/api/china" + provinceCode + "/" + cityCode;
+            String address = "http://guolin.tech/api/china/" + provinceCode + "/" + cityCode;
             queryFromServer(address,"county");
         }
     }
@@ -169,19 +170,6 @@ public class ChooseAreaFragment  extends Fragment {
     private void queryFromServer(String address,final String type){
         showProgressDialog();
         HttpUtil.sendOkHttpRequest(address, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                //通过run……方法回到主线程处理逻辑
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        closeProgressDialog();
-                        Toast.makeText(getContext(),"重新加载",Toast.LENGTH_SHORT).
-                        show();
-                    }
-                });
-            }
-
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseText = response.body().string();
@@ -212,6 +200,21 @@ public class ChooseAreaFragment  extends Fragment {
                     });
                 }
             }
+            @Override
+            public void onFailure(Call call, final IOException e) {
+                //通过run……方法回到主线程处理逻辑
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        closeProgressDialog();
+                        Toast.makeText(getContext(),"重新加载",Toast.LENGTH_SHORT).
+                        show();
+                        //Log.d(TAG, "run: "+e.toString());//倘若这是……的，那就在这里设个回调查看
+                    }
+                });
+            }
+
+
         });
     }
 

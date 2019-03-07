@@ -3,9 +3,10 @@ package com.example.android.db;
 import org.litepal.crud.DataSupport;
 
 public class Province extends DataSupport {
+
     private int id;
 
-    private static String provinceName;
+    private  String provinceName;
 
     private int provinceCode;
 
@@ -17,7 +18,7 @@ public class Province extends DataSupport {
         this.id = id;
     }
 
-    public static String getProvinceName(){
+    public  String getProvinceName(){
         return provinceName;
     }
 
@@ -32,4 +33,5 @@ public class Province extends DataSupport {
     public void setProvinceCode(int provinceCode){
         this.provinceCode = provinceCode;
     }
+
 }

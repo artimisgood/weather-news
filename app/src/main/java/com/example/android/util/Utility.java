@@ -2,6 +2,7 @@ package com.example.android.util;
 
 import android.content.SharedPreferences;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.example.android.db.City;
 import com.example.android.db.County;
@@ -14,10 +15,8 @@ import org.json.JSONObject;
 public class Utility {
 
     //解析和处理服务器返回省级数据
-
     public static boolean handleProvinceResponse(String response){
         if(!TextUtils.isEmpty(response)){
-
             try{
                 JSONArray allProvinces = new JSONArray(response);
                 for(int i = 0;i < allProvinces.length();i ++){
@@ -29,13 +28,14 @@ public class Utility {
                 }
                 return true;
             }catch (JSONException e){
+//                Log.e("error", "handleProvinceResponse: 错误", e);
                 e.printStackTrace();
             }
         }return false;
     }
 
     //解析和处理服务器返回市级数据
-    public static boolean handleCityResponse(String response,int provinceId){
+    public static boolean handleCityResponse(String response, int provinceId){
         if(!TextUtils.isEmpty(response)){
             try{
                 JSONArray allCities = new JSONArray(response);
