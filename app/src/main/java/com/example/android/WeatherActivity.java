@@ -1,6 +1,7 @@
 package com.example.android;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.android.gson.Forecast;
 import com.example.android.gson.Weather;
+import com.example.android.service.AutoUpdateService;
 import com.example.android.util.HttpUtil;
 import com.example.android.util.Utility;
 
@@ -107,6 +109,7 @@ public class WeatherActivity extends AppCompatActivity {
             weatherLayout.setVisibility(View.VISIBLE);
             requestWeather(weatherId);
         }
+
         //设置下拉刷新的监听器
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -122,7 +125,8 @@ public class WeatherActivity extends AppCompatActivity {
             loadBingPic();
         }
 
-        navButton.setOnClickListener(new View.OnClickListener() {//监听器监听button,打开侧栏
+        ////监听器监听button,打开侧栏
+        navButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 drawerLayout.openDrawer(GravityCompat.START);
@@ -212,6 +216,8 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
+        Intent intent = new Intent(this,AutoUpdateService.class);
+        startService(intent);
     }
 
     //申请服务器，加载必应每日一图
@@ -230,7 +236,7 @@ public class WeatherActivity extends AppCompatActivity {
                         getDefaultSharedPreferences(WeatherActivity.this).edit();
                 editor.putString("bing_pic",bingPic);
                 editor.apply();
-                runOnUiThread(new Runnable() {
+                runOnUiThread(  new Runnable() {
                     @Override
                     public void run() {
                         Glide.with(WeatherActivity.this).
